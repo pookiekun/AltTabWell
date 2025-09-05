@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AltTabWell Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-white">
+    <div class="min-h-screen p-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
+                    <i data-lucide="trophy" class="w-10 h-10 text-yellow-500 mr-3"></i>
+                    AltTabWell Leaderboard
+                </h1>
+                <p class="text-gray-600">Top performers across different metrics</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-lg shadow p-4 text-center">
+                    <i data-lucide="activity" class="w-8 h-8 text-orange-500 mx-auto mb-2"></i>
+                    <h3 class="text-lg font-semibold">Total Activities</h3>
+                    <p class="text-2xl font-bold text-gray-800">{{ total_stats.activities }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4 text-center">
+                    <i data-lucide="mountain" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
+                    <h3 class="text-lg font-semibold">Total Distance</h3>
+                    <p class="text-2xl font-bold text-gray-800">{{ total_stats.distance }} km</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4 text-center">
+                    <i data-lucide="clock" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
+                    <h3 class="text-lg font-semibold">Total Time</h3>
+                    <p class="text-2xl font-bold text-gray-800">{{ total_stats.time }} hrs</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4 text-center">
+                    <i data-lucide="zap" class="w-8 h-8 text-yellow-500 mx-auto mb-2"></i>
+                    <h3 class="text-lg font-semibold">Total Kudos</h3>
+                    <p class="text-2xl font-bold text-gray-800">{{ total_stats.kudos }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="flex items-center mb-4">
+                        <i data-lucide="mountain" class="w-6 h-6 text-green-500 mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Distance Leaders</h3>
+                    </div>
+                    <div class="space-y-3">
+                        {% for item in distance_leaders %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-3 
+                                    {% if loop.index == 1 %}bg-yellow-500
+                                    {% elif loop.index == 2 %}bg-gray-400
+                                    {% elif loop.index == 3 %}bg-yellow-600
+                                    {% else %}bg-gray-300{% endif %}">
+                                    {{ loop.index }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ item.athlete.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ item.name }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-lg text-gray-800">{{ "%.1f"|format(item.distance / 1000) }} km</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                     <div class="flex items-center mb-4">
+                        <i data-lucide="zap" class="w-6 h-6 text-blue-500 mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Speed Leaders</h3>
+                    </div>
+                    <div class="space-y-3">
+                        {% for item in speed_leaders %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-3 
+                                    {% if loop.index == 1 %}bg-yellow-500
+                                    {% elif loop.index == 2 %}bg-gray-400
+                                    {% elif loop.index == 3 %}bg-yellow-600
+                                    {% else %}bg-gray-300{% endif %}">
+                                    {{ loop.index }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ item.athlete.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ item.name }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-lg text-gray-800">{{ "%.1f"|format(item.average_speed) }} km/h</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="flex items-center mb-4">
+                        <i data-lucide="activity" class="w-6 h-6 text-red-500 mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Power Leaders</h3>
+                    </div>
+                    <div class="space-y-3">
+                        {% for item in power_leaders %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-3 
+                                    {% if loop.index == 1 %}bg-yellow-500
+                                    {% elif loop.index == 2 %}bg-gray-400
+                                    {% elif loop.index == 3 %}bg-yellow-600
+                                    {% else %}bg-gray-300{% endif %}">
+                                    {{ loop.index }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ item.athlete.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ item.name }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-lg text-gray-800">{{ "%.0f"|format(item.average_watts) }} W</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                 <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                     <div class="flex items-center mb-4">
+                        <i data-lucide="mountain" class="w-6 h-6 text-purple-500 mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Elevation Leaders</h3>
+                    </div>
+                    <div class="space-y-3">
+                        {% for item in elevation_leaders %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-3 
+                                    {% if loop.index == 1 %}bg-yellow-500
+                                    {% elif loop.index == 2 %}bg-gray-400
+                                    {% elif loop.index == 3 %}bg-yellow-600
+                                    {% else %}bg-gray-300{% endif %}">
+                                    {{ loop.index }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ item.athlete.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ item.name }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-lg text-gray-800">{{ item.total_elevation_gain }} m</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Distance Comparison</h3>
+                    <canvas id="distanceChart"></canvas>
+                </div>
+                 <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Average Speed Comparison</h3>
+                    <canvas id="speedChart"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Average Power Distribution</h3>
+                    <div class="h-[300px] w-full flex justify-center"><canvas id="powerChart"></canvas></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Elevation Gain Comparison</h3>
+                    <canvas id="elevationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i data-lucide="trophy" class="w-6 h-6 text-yellow-500 mr-3"></i>
+                    Most Kudos
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    {% for item in kudos_leaders %}
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold
+                            {% if loop.index == 1 %}bg-yellow-500
+                            {% elif loop.index == 2 %}bg-gray-400
+                            {% elif loop.index == 3 %}bg-yellow-600
+                            {% else %}bg-gray-300{% endif %}">
+                            {{ loop.index }}
+                        </div>
+                        <p class="font-semibold text-sm">{{ item.athlete.name }}</p>
+                        <p class="text-xs text-gray-600 mb-2">{{ item.name }}</p>
+                        <p class="text-lg font-bold text-orange-500">{{ item.kudos_count }} ❤️</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Activate Lucide icons
+        lucide.createIcons();
+        
+        // Use the |tojson filter to safely pass data from Python to JavaScript
+        const chartData = JSON.parse('{{ chart_data|tojson|safe }}');
+        const COLORS = ['#FC4C02', '#FF6B35', '#FF8C69', '#FFA07A', '#FFB6C1'];
+
+        // 1. Distance Chart (Bar)
+        const distCtx = document.getElementById('distanceChart').getContext('2d');
+        new Chart(distCtx, {
+            type: 'bar',
+            data: {
+                labels: chartData.distance.labels,
+                datasets: [{
+                    label: 'Distance (km)',
+                    data: chartData.distance.values,
+                    backgroundColor: '#FC4C02',
+                    borderColor: '#E64402',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+        
+        // 2. Speed Chart (Bar)
+        const speedCtx = document.getElementById('speedChart').getContext('2d');
+        new Chart(speedCtx, {
+            type: 'bar',
+            data: {
+                labels: chartData.speed.labels,
+                datasets: [{
+                    label: 'Average Speed (km/h)',
+                    data: chartData.speed.values,
+                    backgroundColor: '#3B82F6',
+                    borderColor: '#2563EB',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 3. Power Chart (Pie)
+        const powerCtx = document.getElementById('powerChart').getContext('2d');
+        new Chart(powerCtx, {
+            type: 'pie',
+            data: {
+                labels: chartData.power.labels,
+                datasets: [{
+                    label: 'Average Power (W)',
+                    data: chartData.power.values,
+                    backgroundColor: COLORS,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw} W`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Elevation Chart (Line)
+        const elevCtx = document.getElementById('elevationChart').getContext('2d');
+        new Chart(elevCtx, {
+            type: 'line',
+            data: {
+                labels: chartData.elevation.labels,
+                datasets: [{
+                    label: 'Elevation Gain (m)',
+                    data: chartData.elevation.values,
+                    fill: false,
+                    borderColor: '#8B5CF6',
+                    tension: 0.1,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+    </script>
+</body>
+</html>
